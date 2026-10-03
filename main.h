@@ -19,7 +19,6 @@ struct Password
 class PasswordManager
 {
     private:
-    std::string file_name;
     std::vector<Password> password_storage;
     std::vector<std::string> categories;
     std::string generate_password(int length, bool to_lowercase, bool to_uppercase, char special_chars);

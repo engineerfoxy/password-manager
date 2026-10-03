@@ -30,21 +30,20 @@ std::string PasswordManager::generate_password(int length, bool to_lowercase, bo
     {
         int randomIndex = rand() % combinedCharslength;
         result = combinedChars[randomIndex];
-    }    
+    }
     return result;
 }
 
 void PasswordManager::add_password() {
     Password m_password;
     std::cout << "add a new password: ";
-
-    do {
-        std::cout << "Name: ";
-        getline(std::cin , m_password.name);
-    } while (m_password.name.empty());
     
-    std::cout << "Do you want to generate random password? y/n";
+    std::cout << "Names: ";
+    getline(std::cin , m_password.name);
+    
+    std::cout << "Do you want to generate random password? y/n : ";
     char y_or_n;
+    std::cin >> y_or_n;
     if (y_or_n == 'y') {
         int length;
         bool includeUppercase, includeLowercase, includeSpecialChars;
@@ -75,6 +74,8 @@ void PasswordManager::add_password() {
         includeSpecialChars = (specialChoice == 'y');
 
         m_password.password = generate_password(length, includeLowercase, includeUppercase, includeSpecialChars);
+
+        std::cout << m_password.password;
     }
     if (y_or_n == 'n') {
         return;
@@ -89,7 +90,11 @@ void PasswordManager::search_password(const std::string& queery) {}
 
 void PasswordManager::add_category()
 {
-    
+    std::string category;
+    std::cout << "Enter category: ";
+    std::cin >> category;
+    categories.push_back(category);
+    std::cout << "Category added" << std::endl;
 }
 
 void PasswordManager::del_category() {}
@@ -99,16 +104,27 @@ int main()
     PasswordManager m_pass;
     int choice;
     std::string queery;
-    switch (choice)
+
+    while (true)
     {
-        case 1:
-            m_pass.add_category();
-        break;
-        case 2:
-            m_pass.add_password();
-        break;
-        case 3:
-            m_pass.search_password(queery);
-        break;
+        std::cout << "Enter your choice: \n";
+        std::cout << "1- Add category\n";
+        std::cout << "2- Add password\n";
+        std::cout << "3- Search password\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                m_pass.add_category();
+            break;
+            case 2:
+                m_pass.add_password();
+            break;
+            case 3:
+                m_pass.search_password(queery);
+            break;
+        }
     }
 }
