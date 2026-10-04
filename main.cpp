@@ -94,7 +94,10 @@ void PasswordManager::add_category()
     std::cout << "Enter category: ";
     std::cin >> category;
     categories.push_back(category);
-    std::cout << "Category added" << std::endl;
+    for (const auto& cat : categories)
+    {
+        std::cout << "Category added :" << cat << " \n" << std::endl;
+    }
 }
 
 void PasswordManager::del_category() {}
