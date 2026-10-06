@@ -3,33 +3,28 @@
 
 #include "main.h"
 
-std::string PasswordManager::generate_password(int length, bool to_lowercase, bool to_uppercase, char special_chars)
+std::string PasswordManager::generate_password(int length)
 {
-    srand(time(NULL));
-    const std::string lowerChars = "abcdefghijklmnopqrstuvwxyz";
-    const std::string upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const std::string specialChars = "!@#$%^&*()-+=~`;:'?/";
+    const std::string lowerChars   = "abcdefghijklmnopqrstuvwxyz";
+    const std::string upperChars   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const std::string specialSet   = "!@#$%^&*()-+=~`;:'?/";
 
     std::string combinedChars;
+    combinedChars += upperChars;
+    combinedChars += lowerChars;
+    combinedChars += specialSet;
 
-    if (to_uppercase) {
-        combinedChars += upperChars;
+    if (combinedChars.empty()) {
+        throw std::invalid_argument("At least one character set must be selected");
     }
-    if (to_lowercase) {
-        combinedChars += lowerChars;
-    }
-    if (special_chars) {
-        combinedChars += specialChars;
-    }
+
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<std::size_t> dist(0, combinedChars.size() - 1);
 
     std::string result;
-
-    int combinedCharslength = combinedChars.length();
-
-    for (int i = 0;i < length;i++)
-    {
-        int randomIndex = rand() % combinedCharslength;
-        result = combinedChars[randomIndex];
+    result.reserve(length);
+    for (int i = 0; i < length; ++i) {
+        result += combinedChars[dist(rng)];
     }
     return result;
 }
@@ -46,36 +41,19 @@ void PasswordManager::add_password() {
     std::cin >> y_or_n;
     if (y_or_n == 'y') {
         int length;
-        bool includeUppercase, includeLowercase, includeSpecialChars;
         
         std::cout << "Password length: ";
         std::cin >> length;
         std::cin.ignore();
+        
+        m_password.password = generate_password(length);
+        
+        std::cout << "witch category you want to add in: ";
+        getline(std::cin, m_password.category);
 
-        std::cout << "Include uppercase letters? (Y/N): ";
-        char upperChoice;
-        std::cin >> upperChoice;
-        std::cin.ignore();
-        tolower(upperChoice);
-        includeUppercase = (upperChoice == 'y');
+        std::cout << m_password.password << std::endl;
 
-        std::cout << "Include lowercase letters? (Y/N): ";
-        char lowerChoice;
-        std::cin >> lowerChoice;
-        std::cin.ignore();
-        tolower(lowerChoice);
-        includeLowercase = (lowerChoice == 'y');
-
-        std::cout << "Include special characters? (Y/N): ";
-        char specialChoice;
-        std::cin >> specialChoice;
-        std::cin.ignore();
-        tolower(specialChoice);
-        includeSpecialChars = (specialChoice == 'y');
-
-        m_password.password = generate_password(length, includeLowercase, includeUppercase, includeSpecialChars);
-
-        std::cout << m_password.password;
+        password_storage.push_back(m_password);
     }
     if (y_or_n == 'n') {
         return;
