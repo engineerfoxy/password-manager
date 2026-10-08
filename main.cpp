@@ -31,32 +31,29 @@ std::string PasswordManager::generate_password(int length)
 
 void PasswordManager::add_password() {
     Password m_password;
-    std::cout << "add a new password: ";
+    std::cout << "Let's add a new password \n";
     
     std::cout << "Names: ";
     getline(std::cin , m_password.name);
-    
-    std::cout << "Do you want to generate random password? y/n : ";
-    char y_or_n;
-    std::cin >> y_or_n;
-    if (y_or_n == 'y') {
-        int length;
+    int length;
         
-        std::cout << "Password length: ";
-        std::cin >> length;
-        std::cin.ignore();
+    std::cout << "Password length: ";
+    std::cin >> length;
+    std::cin.ignore();
         
-        m_password.password = generate_password(length);
+    m_password.password = generate_password(length);
         
-        std::cout << "witch category you want to add in: ";
-        getline(std::cin, m_password.category);
+    std::cout << "witch category you want to add in: ";
+    getline(std::cin, m_password.category);
 
-        std::cout << m_password.password << std::endl;
-
-        password_storage.push_back(m_password);
+    if (!copy_to_clipboard(m_password.password))
+    {
+        std::cout << "Failed to copy password to clipboard!" << std::endl;        
     }
-    if (y_or_n == 'n') {
-        return;
+    else
+    {
+        std::cout << "password copied to clipboard :" << m_password.password << std::endl;
+        password_storage.push_back(m_password);
     }
 }
 
@@ -64,7 +61,10 @@ void PasswordManager::edit_password() {}
 
 void PasswordManager::delete_password() {}
 
-void PasswordManager::search_password(const std::string& queery) {}
+void PasswordManager::search_password(const std::string& queery)
+{
+    
+}
 
 void PasswordManager::add_category()
 {
@@ -79,6 +79,28 @@ void PasswordManager::add_category()
 }
 
 void PasswordManager::del_category() {}
+
+bool PasswordManager::copy_to_clipboard(std::string text)
+{
+    const char* commands[] = {
+        "wl-copy -o ",                        // Wayland
+        "xclip -selection clipboard",     // X11 (xclip)
+        "xsel --clipboard --input"        // X11 (xsel)
+    };
+    
+    for (const char* cmd : commands)
+    {
+        FILE *pipe = popen(cmd,"w");
+        
+        fwrite(text.c_str(), 0, text.size(), pipe);
+
+        int status = pclose(pipe);
+
+        if (status == 0)
+            return true;
+    }
+    return false;
+}
 
 int main()
 {
@@ -104,7 +126,15 @@ int main()
                 m_pass.add_password();
             break;
             case 3:
+                std::cout << "Enter Querry of password: ";
+                getline(std::cin, queery);
                 m_pass.search_password(queery);
+            break;
+            case 4:
+                m_pass.del_category();
+            break;
+            case 5:
+                m_pass.delete_password();
             break;
         }
     }

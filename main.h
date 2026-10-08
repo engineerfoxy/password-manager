@@ -8,6 +8,7 @@
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 struct Password
 {
@@ -33,6 +34,7 @@ class PasswordManager
     void del_category();
     //--------------------------------------------------------
     void print_vector();
+    bool copy_to_clipboard(std::string text);
 };
 
 #endif
